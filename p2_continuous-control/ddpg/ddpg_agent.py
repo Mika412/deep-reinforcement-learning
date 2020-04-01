@@ -9,14 +9,15 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
-BUFFER_SIZE = int(1e6)  # replay buffer size
-BATCH_SIZE = 128        # minibatch size
-GAMMA = 0.99            # discount factor
+BUFFER_SIZE = 100000 #int(1e5)  # replay buffer size
+BATCH_SIZE = 256 #128        # minibatch size
+GAMMA = 0.9 #0.99            # discount factor
 TAU = 1e-3              # for soft update of target parameters
-LR_ACTOR = 1e-4         # learning rate of the actor 
-LR_CRITIC = 3e-4        # learning rate of the critic
-WEIGHT_DECAY = 0.0001   # L2 weight decay
+LR_ACTOR = 0.001 #1e-4         # learning rate of the actor 
+LR_CRITIC = 0.001 #1e-3        # learning rate of the critic
+WEIGHT_DECAY = 1e-6 #0        # L2 weight decay
 
+SIGMA = 0.1
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class Agent():
@@ -46,7 +47,7 @@ class Agent():
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
 
         # Noise process
-        self.noise = OUNoise(action_size, random_seed)
+        self.noise = OUNoise(action_size, random_seed, sigma=SIGMA)
 
         # Replay memory
         self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
